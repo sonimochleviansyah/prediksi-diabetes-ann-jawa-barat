@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediksi Diabetes Melitus Jawa Barat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand-primary: #6366f1;
+            --brand-secondary: #a855f7;
+            --bg-deep: #020617;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-deep);
+            color: #f1f5f9;
+            overflow-x: hidden;
+            letter-spacing: -0.01em;
+        }
+
+        .bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.16) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(168, 85, 247, 0.14) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.08) 0%, transparent 45%);
+        }
+
+        .noise {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            pointer-events: none;
+        }
+
+        .bento-card {
+            background: rgba(15, 23, 42, 0.48);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.35s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bento-card:hover {
+            border-color: rgba(99, 102, 241, 0.35);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 24px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-elite {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.28);
+        }
+
+        .btn-elite:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 14px 34px rgba(99, 102, 241, 0.38);
+        }
+
+        .path-animation {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 3s ease forwards infinite alternate;
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 28px 28px;
+            mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), transparent);
+            pointer-events: none;
+        }
+
+        input,
+        select {
+            color-scheme: dark;
+        }
+
+        ::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 999px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <div class="bg-canvas"></div>
+    <div class="noise"></div>
+
+    <div class="container mx-auto px-6 py-10 lg:py-16">
+        <!-- Header -->
+        <div class="flex flex-col lg:flex-row justify-between lg:items-end gap-8 mb-12">
+            <div>
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[10px] font-extrabold tracking-[0.25em] uppercase mb-5">
+                    AI Health Forecasting System
+                </div>
+
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-none">
+                    Prediksi <span class="text-indigo-500">Diabetes</span><br>
+                    <span class="text-slate-500">Jawa Barat</span>
+                </h1>
+
+                <p class="text-slate-400 mt-5 max-w-2xl text-sm md:text-base leading-relaxed">
+                    Sistem prediksi jumlah penderita diabetes melitus berbasis
+                    <span class="text-white font-semibold">Artificial Neural Network (ANN)</span>
+                    menggunakan dataset kabupaten/kota di Jawa Barat.
+                </p>
+            </div>
+
+            <div class="hidden lg:block text-right">
+                <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-bold">Studi Kasus</p>
+                <p class="text-2xl font-bold text-white mt-1">Kabupaten Bandung</p>
+                <div class="w-40 h-1 bg-slate-800 mt-3 rounded-full overflow-hidden ml-auto">
+                    <div class="h-full bg-indigo-500 w-[82%]"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Sidebar -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bento-card rounded-[2rem] p-8 border-t-2 border-t-indigo-500/30">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-3">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4">
+                            </path>
+                        </svg>
+                        Parameter Prediksi
+                    </h3>
+
+                    <form method="POST" id="predictForm" class="space-y-6">
+                        <div>
+                            <label
+                                class="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.25em] mb-2 block">
+                                Kabupaten / Kota
+                            </label>
+                            <select name="kabupaten" required
+                                class="w-full bg-slate-900/60 border border-slate-800 p-4 rounded-2xl outline-none focus:border-indigo-500/50 transition-all text-sm">
+                                <option value="" disabled {% if not selected_kabupaten %}selected{% endif %}>Pilih
+                                    wilayah...</option>
+                                {% for kab in kabupaten_list %}
+                                <option value="{{ kab }}" {% if selected_kabupaten==kab %}selected{% endif %}>
+                                    {{ kab }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label
+                                class="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.25em] mb-2 block">
+                                Tahun Prediksi
+                            </label>
+                            <input type="number" name="tahun" required min="2019" max="2035" placeholder="Contoh: 2025"
+                                value="{{ selected_tahun if selected_tahun else '' }}"
+                                class="w-full bg-slate-900/60 border border-slate-800 p-4 rounded-2xl outline-none focus:border-indigo-500/50 transition-all text-sm" />
+                        </div>
+
+                        <button type="submit"
+                            class="w-full btn-elite py-4 rounded-2xl font-bold text-xs uppercase tracking-[0.25em] mt-2">
+                            Prediksi Sekarang
+                        </button>
+                    </form>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bento-card rounded-3xl p-5">
+                        <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.2em]">Model</p>
+                        <p class="text-sm font-semibold text-white mt-2">ANN Regression</p>
+                    </div>
+                    <div class="bento-card rounded-3xl p-5">
+                        <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.2em]">Dataset</p>
+                        <p class="text-sm font-semibold text-indigo-300 mt-2">Open Data Jabar</p>
+                    </div>
+                    <div class="bento-card rounded-3xl p-5">
+                        <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.2em]">Periode</p>
+                        <p class="text-sm font-semibold text-white mt-2">2019–2024</p>
+                    </div>
+                    <div class="bento-card rounded-3xl p-5">
+                        <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.2em]">Target</p>
+                        <p class="text-sm font-semibold text-white mt-2">Jumlah Penderita</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-8">
+                {% if prediction is none and not error %}
+                <div
+                    class="bento-card rounded-[2.5rem] p-10 lg:p-14 min-h-[560px] flex flex-col items-center justify-center text-center relative overflow-hidden fade-in">
+                    <div class="grid-overlay"></div>
+
+                    <div class="relative w-64 h-64 mb-8">
+                        <svg viewBox="0 0 200 200" class="w-full h-full opacity-25">
+                            <path class="path-animation" stroke="#6366f1" stroke-width="0.8" fill="none"
+                                d="M10,100 Q50,10 100,100 T190,100" />
+                            <circle cx="100" cy="100" r="40" stroke="#6366f1" stroke-width="1" fill="none" />
+                            <circle cx="100" cy="100" r="65" stroke="#a855f7" stroke-width="0.6" fill="none" />
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-24 h-24 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
+                            <p class="absolute text-xs font-bold text-indigo-400/70 uppercase tracking-[0.25em]">
+                                Awaiting Input
+                            </p>
+                        </div>
+                    </div>
+
+                    <h2 class="text-2xl lg:text-3xl font-bold text-slate-100">
+                        Sistem Siap Melakukan Prediksi
+                    </h2>
+                    <p class="text-slate-400 max-w-xl mt-4 text-sm md:text-base leading-relaxed">
+                        Masukkan kabupaten/kota dan tahun prediksi pada panel kiri untuk
+                        memperoleh estimasi jumlah penderita diabetes melitus berdasarkan pola data historis Jawa Barat.
+                    </p>
+                </div>
+                {% else %}
+                <div class="space-y-6 fade-in">
+                    <div class="bento-card rounded-[2.5rem] p-8 md:p-10 overflow-hidden group min-h-[390px]">
+                        <div class="shimmer absolute inset-0 pointer-events-none"></div>
+
+                        <div class="relative z-10">
+                            <div class="flex flex-col md:flex-row justify-between gap-8 mb-12">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                        <span class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
+                                            Hasil Prediksi ANN
+                                            <div class="bento-card rounded-3xl p-6 mt-6">
+                                                <h4 class="text-sm font-bold text-slate-300 mb-4">
+                                                    Grafik Tren Penderita Diabetes
+                                                </h4>
+                                                <canvas id="trendChart"></canvas>
+                                            </div>
+                                        </span>
+                                    </div>
+
+                                    <h2 class="text-4xl lg:text-6xl font-black tracking-tight text-white">
+                                        {{ selected_kabupaten if selected_kabupaten else '---' }}
+                                    </h2>
+
+                                    <p class="text-slate-400 mt-3 font-medium text-sm md:text-base">
+                                        Estimasi jumlah penderita diabetes melitus pada tahun
+                                        <span class="text-indigo-400 font-bold">{{ selected_tahun if selected_tahun else
+                                            '----' }}</span>
+                                    </p>
+                                </div>
+
+                                <div class="shrink-0">
+                                    <div
+                                        class="w-24 h-24 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md">
+                                        <svg class="w-10 h-10 text-indigo-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"
+                                                d="M9 17v-6m3 6V7m3 10v-4m3 4V5M5 19h14"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if error %}
+                            <div class="rounded-[2rem] border border-red-500/20 bg-red-500/10 p-6">
+                                <p class="text-red-300 font-semibold">Terjadi kesalahan</p>
+                                <p class="text-red-200/80 text-sm mt-2">{{ error }}</p>
+                            </div>
+                            {% else %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-end">
+                                <div>
+                                    <div
+                                        class="text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter neon-text text-white">
+                                        {{ "{:,}".format(prediction).replace(",", ".") }}
+                                    </div>
+                                    <p class="text-sm font-bold text-slate-500 uppercase tracking-[0.25em] mt-4">
+                                        Orang
+                                    </p>
+                                    <p class="text-slate-400 text-sm mt-4 leading-relaxed max-w-md">
+                                        Hasil merupakan estimasi model ANN berdasarkan data historis, bukan diagnosis
+                                        medis individu.
+                                    </p>
+                                </div>
+
+                                <div class="space-y-5">
+                                    <div class="p-6 rounded-[2rem] bg-indigo-500/5 border border-indigo-500/10">
+                                        <p
+                                            class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-2">
+                                            Interpretasi
+                                        </p>
+                                        <p class="text-slate-200 text-sm leading-relaxed">
+                                            Nilai di atas merupakan estimasi dari model ANN berdasarkan
+                                            pola historis data jumlah penderita diabetes melitus per
+                                            kabupaten/kota di Jawa Barat.
+                                        </p>
+                                    </div>
+
+                                    <div class="p-6 rounded-[2rem] bg-white/5 border border-white/10">
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">
+                                            Catatan
+                                        </p>
+                                        <p class="text-slate-300 text-sm leading-relaxed">
+                                            Hasil prediksi digunakan sebagai bahan analisis untuk membantu
+                                            memahami tren, bukan sebagai angka medis final.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bento-card rounded-3xl p-6 md:col-span-2">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
+                                Ringkasan Studi Kasus
+                            </h4>
+                            <ul class="space-y-3 text-sm text-slate-300 leading-relaxed">
+                                <li class="flex gap-3">
+                                    <span class="mt-2 w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
+                                    Dataset menggunakan data jumlah penderita diabetes melitus berdasarkan
+                                    kabupaten/kota di Jawa Barat.
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="mt-2 w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
+                                    Model dibangun dengan Artificial Neural Network untuk memprediksi jumlah penderita
+                                    pada tahun tertentu.
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="mt-2 w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
+                                    Fokus analisis tugas diarahkan pada Kabupaten Bandung sebagai studi kasus utama.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="bento-card rounded-3xl p-6 bg-indigo-600/10 border-indigo-500/20">
+                            <h4 class="text-xs font-bold text-indigo-300 uppercase tracking-[0.2em] mb-2">
+                                Output Model
+                            </h4>
+                            <p class="text-2xl font-bold text-white">Regresi</p>
+                            <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+                                Memprediksi jumlah penderita diabetes melitus, bukan klasifikasi pasien individu.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer
+            class="mt-20 py-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-5">
+            <div class="flex items-center gap-3 opacity-70">
+                <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+                <span class="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-500">
+                    Artificial Neural Network • Flask • Open Data Jabar
+                </span>
+            </div>
+            <div class="text-[10px] font-bold text-slate-600 uppercase tracking-[0.25em]">
+                Dataset: Open Data Jabar (2019–2024)
+            </div>
+        </footer>
+    </div>
+
+</body>
+
+</html>
